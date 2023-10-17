@@ -24,15 +24,3 @@ class Ball(object):
         rounded_vec = rounding(self.position)
         self.rect.center = (rounded_vec.x, rounded_vec.y)
         display.blit(self.surf, self.rect)
-
-
-class Wall:
-    def __init__(self, pos, size):
-        self.surf = pygame.Surface(size)
-        self.surf.fill((0, 0, 0))
-        self.rect = self.surf.get_rect(center=pos)
-
-    def draw(self, display):
-        display.blit(self.surf, self.rect)
-
-

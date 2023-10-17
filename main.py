@@ -1,5 +1,4 @@
 import pygame
-import time
 from sys import exit
 from ballClass import Ball
 from vectorClass import Vector2, dist, reflection
@@ -8,21 +7,19 @@ pygame.init()
 
 # Game properties :
 WIDTH, HEIGHT = 1200, 1200
-display = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME | pygame.FULLSCREEN)
+display = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME )#| pygame.FULLSCREEN)
 
 # Simulation properties :
+simulationOffset = Vector2(WIDTH/2, HEIGHT/2)
 radius = 600
+centerVec = Vector2(radius, radius)
 timeSteps = 25
-prev_time = 0
 FPS = 60
 clock = pygame.time.Clock()
-gravity = -1 / timeSteps
-pause = True
-reflected = False
-widthBalls = 400
-heightBalls = 4
+widthBalls = 600
+heightBalls = 6
 balls = []
-ballsReflection = []
+pause = True
 
 # Text :
 fpsFont = pygame.font.SysFont("comic sans", 20)
@@ -31,16 +28,16 @@ fpsFont = pygame.font.SysFont("comic sans", 20)
 for x in range(1, 1 + widthBalls):
     for y in range(1, 1 + heightBalls):
         balls.append(
-            Ball(radius=25, center_pos=(widthBalls / 2 + x + 450, radius + y * 40), color=(
-            (y * 255 * x * 255 / (widthBalls * heightBalls)) % 255,
-            (y * 64 * x * 255 / (widthBalls * heightBalls)) % 255,
-            (y * 125 * x * 255 / (widthBalls * heightBalls)) % 255),
+            Ball(radius=10, center_pos=(simulationOffset.x - widthBalls / 2 + x * 1 + 0, simulationOffset.y + y * 29), color=(
+                (x * y * 255 / (widthBalls*heightBalls)) % 255,
+                (x * y * 255 / (widthBalls*heightBalls)) % 255,
+                (x * y * 255 / (widthBalls*heightBalls)) % 255),
                  velocity=(0, -10 / timeSteps)))
 
 
 def draw_screen():
     display.fill((0, 0, 0))
-    pygame.draw.circle(display, (25, 25, 25), (WIDTH / 2, HEIGHT / 2), radius)
+    pygame.draw.circle(display, (25, 25, 25), simulationOffset.return_tuple(), radius)
     display.blit(fpsText, (10, 10))
     if pause:
         for b in balls:
@@ -50,9 +47,6 @@ def draw_screen():
 # Main loop :
 while 1:
     clock.tick(FPS)
-    dt = time.time() - prev_time
-    prev_time = time.time()
-    print("dt: ", dt)
     fpsText = fpsFont.render(str(round(clock.get_fps(), 2)), True, (255, 255, 255))
 
     # Event listening :
@@ -73,13 +67,13 @@ while 1:
     draw_screen()
     if not pause:
         for ball in balls:
-            if dist(ball.position + ball.velocity * timeSteps, Vector2(radius, radius)) < radius:
+            if dist(ball.position + ball.velocity * timeSteps, centerVec) < radius:
                 ball.position += ball.velocity * timeSteps
             else:
                 for _ in range(timeSteps):
-                    if dist(ball.position, Vector2(radius, radius)) >= radius:
-                        n = Vector2(radius - ball.position.x, radius - ball.position.y).get_normalized()
-                        ball.velocity = reflection(ball.velocity, n)
+                    if dist(ball.position, centerVec) >= radius:
+                        ball.velocity = reflection(ball.velocity, Vector2(radius - ball.position.x,
+                                                                          radius - ball.position.y).get_normalized())
                     ball.update()
             ball.draw(display)
 
