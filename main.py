@@ -7,10 +7,10 @@ pygame.init()
 
 # Game properties :
 WIDTH, HEIGHT = 1200, 1200
-display = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME )#| pygame.FULLSCREEN)
+display = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME)  # | pygame.FULLSCREEN)
 
 # Simulation properties :
-simulationOffset = Vector2(WIDTH/2, HEIGHT/2)
+simulationOffset = Vector2(WIDTH / 2, HEIGHT / 2)
 radius = 600
 centerVec = Vector2(radius, radius)
 timeSteps = 25
@@ -28,10 +28,11 @@ fpsFont = pygame.font.SysFont("comic sans", 20)
 for x in range(1, 1 + widthBalls):
     for y in range(1, 1 + heightBalls):
         balls.append(
-            Ball(radius=10, center_pos=(simulationOffset.x - widthBalls / 2 + x * 1 + 0, simulationOffset.y + y * 29), color=(
-                (x * y * 255 / (widthBalls*heightBalls)) % 255,
-                (x * y * 255 / (widthBalls*heightBalls)) % 255,
-                (x * y * 255 / (widthBalls*heightBalls)) % 255),
+            Ball(radius=10, center_pos=(simulationOffset.x - widthBalls / 2 + x * 1 + 0, simulationOffset.y + y * 29),
+                 color=(
+                     (x * y * 255 / (widthBalls * heightBalls)) % 255,
+                     (x * y * 255 / (widthBalls * heightBalls)) % 255,
+                     (x * y * 255 / (widthBalls * heightBalls)) % 255),
                  velocity=(0, -10 / timeSteps)))
 
 
