@@ -1,9 +1,7 @@
 import pygame
-
-from math import sqrt, pow
+from math import sqrt
 from typing import Union
 from abc import ABC
-
 
 
 class Vector(ABC):
@@ -55,7 +53,6 @@ class Vector2(Vector):
         return self.x, self.y
 
     def draw(self, display: pygame.Surface, origin: Union[Vector, tuple], color=(0, 0, 125), scale: int = 10):
-
         if isinstance(origin, self.__class__):
             origin = (origin.x, origin.y)
         pygame.draw.line(display, color, origin, (origin[0] + self.x*scale, origin[1] + self.y*scale), 5)
@@ -72,7 +69,6 @@ def dot_product(v1: Vector2, v2: Vector2) -> Union[float, int]:
 def dist(v1: Vector2, v2: Union[Vector2, tuple]) -> Union[float, int]:
     if isinstance(v2, tuple):
         v2 = Vector2(v2[0], v2[1])
-
     return (v1 - v2).get_length()
 
 
