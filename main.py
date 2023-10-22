@@ -13,27 +13,30 @@ display = pygame.display.set_mode((WIDTH, HEIGHT), pygame.NOFRAME)  # | pygame.F
 simulationOffset = Vector2(WIDTH / 2, HEIGHT / 2)
 radius = 600
 centerVec = Vector2(radius, radius)
-timeSteps = 25
+timeSteps = 25000
 FPS = 60
 clock = pygame.time.Clock()
-widthBalls = 600
-heightBalls = 6
+widthBalls = 1000
+heightBalls = 5
+proportion = Vector2(1/widthBalls, 1/heightBalls)
 balls = []
 pause = True
+
+optizeFlagg = True
 
 # Text :
 fpsFont = pygame.font.SysFont("comic sans", 20)
 
 # Entities :
-for x in range(1, 1 + widthBalls):
-    for y in range(1, 1 + heightBalls):
+for x in range(widthBalls):
+    for y in range(heightBalls):
         balls.append(
-            Ball(radius=10, center_pos=(simulationOffset.x - widthBalls / 2 + x * 1 + 0, simulationOffset.y + y * 29),
+            Ball(radius=10, center_pos=(simulationOffset.x - widthBalls / 2 + x, simulationOffset.y - heightBalls * 80 / 2 + y * 80),
                  color=(
-                     (x * y * 255 / (widthBalls * heightBalls)) % 255,
-                     (x * y * 255 / (widthBalls * heightBalls)) % 255,
-                     (x * y * 255 / (widthBalls * heightBalls)) % 255),
-                 velocity=(0, -10 / timeSteps)))
+                     (x * proportion.x / 3) * 255,
+                     (x * proportion.x * y * proportion.y) * 255,
+                     (x * proportion.x) * 255),
+                 velocity=(0, -1000 / timeSteps)))
 
 
 def draw_screen():
@@ -67,15 +70,28 @@ while 1:
     # Logic :
     draw_screen()
     if not pause:
-        for ball in balls:
-            if dist(ball.position + ball.velocity * timeSteps, centerVec) < radius:
-                ball.position += ball.velocity * timeSteps
-            else:
-                for _ in range(timeSteps):
-                    if dist(ball.position, centerVec) >= radius:
-                        ball.velocity = reflection(ball.velocity, Vector2(radius - ball.position.x,
-                                                                          radius - ball.position.y).get_normalized())
-                    ball.update()
-            ball.draw(display)
+        if optizeFlagg:
+            for ball in balls:
+                if dist(ball.position + ball.velocity * timeSteps, centerVec) < radius:
+                    ball.position += ball.velocity * timeSteps
+                else:
+                    leftDis = radius - dist(ball.position, centerVec)
+                    leftSteps = leftDis / ball.velocity.get_length()
+                    ball.position += leftSteps * ball.velocity
+                    ball.velocity = reflection(ball.velocity, Vector2(radius - ball.position.x,
+                                                                              radius - ball.position.y).get_normalized())
+                    ball.position += (timeSteps - leftSteps) * ball.velocity
+                ball.draw(display)
+        else:
+            for ball in balls:
+                if dist(ball.position + ball.velocity * timeSteps, centerVec) < radius:
+                    ball.position += ball.velocity * timeSteps
+                else:
+                    for _ in range(timeSteps):
+                        if dist(ball.position, centerVec) >= radius:
+                            ball.velocity = reflection(ball.velocity, Vector2(radius - ball.position.x,
+                                                                              radius - ball.position.y).get_normalized())
+                        ball.update()
+                ball.draw(display)
 
     pygame.display.update()

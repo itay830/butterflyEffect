@@ -3,11 +3,11 @@ from math import sqrt
 from typing import Union
 from abc import ABC
 
-
 class Vector(ABC):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
 
 
 class Vector2(Vector):
@@ -40,12 +40,18 @@ class Vector2(Vector):
             return Vector2(self.x / other.x, self.y / other.y)
         return Vector2(self.x / other, self.y / other)
 
+    def __rmul__(self, other):
+        return self * other
+
+    def __rtruediv__(self, other):
+        return Vector2(other / self.x, other / self.y)
+
     def get_length(self):
         return sqrt(self.x**2 + self.y**2)
 
     def get_normalized(self):
         length = self.get_length()
-        if length < 0.0001:
+        if length == 0:
             return Vector2(0, 1)
         return self / length
 
@@ -70,7 +76,6 @@ def dist(v1: Vector2, v2: Union[Vector2, tuple]) -> Union[float, int]:
     if isinstance(v2, tuple):
         v2 = Vector2(v2[0], v2[1])
     return (v1 - v2).get_length()
-
 
 def reflection(v1: Vector2, normal: Vector2) -> Vector2:
     return v1 - normal * dot_product(v1, normal) * 2
